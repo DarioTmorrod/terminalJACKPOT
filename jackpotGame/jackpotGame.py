@@ -2,6 +2,7 @@ import random
 import time
 import curses
 import json
+from datetime import date
 
 def Wait():
     time.sleep(1.0)
@@ -45,14 +46,21 @@ def init_menu(stdscr):
 
 def initCredits(stdscr):
     stdscr.clear()
+    h,w =stdscr.getmaxyx()
     f = open("CREDITS.json",)
     json_data = json.load(f)
     key = 0
+    title = json_data["title"]
+    body = json_data["body"]
     while key!=curses.KEY_ENTER and key not in [10,13]:
         stdscr.clear()
-        stdscr.addstr(0,0,json_data["title"])
-        stdscr.addstr(1,0,json_data["body"])
-        stdscr.addstr(10, 0, "PRESS RETURN TO GO BACK")
+        x = w//2 -len(title)//2
+        stdscr.attron(curses.A_BOLD)
+        stdscr.addstr(1,x,title)
+        stdscr.attroff(curses.A_BOLD)
+        x = w//2 -len(body)//2
+        stdscr.addstr(3,x,body)
+        stdscr.addstr(0, 0, "PRESS RETURN TO GO BACK")
         stdscr.refresh()
         key = stdscr.getch()
 
@@ -60,8 +68,17 @@ def initCredits(stdscr):
 
 def initScoreBoard(stdscr):
     stdscr.clear()
+    h,w = stdscr.getmaxyx()
     f = open("SCOREBOARD.json",)
-    json_data = json.load(f)
+    try:
+        json_data = json.load(f)
+    except:
+        txt="THE SCOREBOARD IS EMPTY"
+        stdscr.addstr(h//2,w//2 - len(txt)//2,txt)
+        stdscr.refresh()
+        time.sleep(1.5)
+        main(stdscr)
+
     key = 0
     while key!=curses.KEY_ENTER and key not in [10,13]:
         stdscr.clear()
@@ -123,7 +140,7 @@ def rollFX(stdscr,result):
             stdscr.refresh()
             time.sleep(0.2)
 
-    stdscr.addstr(0,0,"PRESS ESC TO EXIT")
+    stdscr.addstr(0,0,"PRESS Q TO EXIT")
     if result[0]==result[1] and result[1]==result[2]:
         text = " $  $  $  *YOU WIN*  $  $  $"
         x = w//2 - len(text)/2
@@ -132,7 +149,57 @@ def rollFX(stdscr,result):
         text = "SORRY... PRESS ENTER TO TRY AGAIN"
         x = w//2 - len(text)/2
         stdscr.addstr(y+3,x,text)
+
+    stdscr.addstr(h -1,0,"PRESS S TO SAVE SCORE")
+    stdscr.refresh()
     
+def saveScore(stdscr,result):
+    stdscr.clear()
+    h , w = stdscr.getmaxyx()
+    title= "WRITE YOUR NAME"
+    xt = w//2 - len(title)//2
+    stdscr.addstr(2,xt,title)
+    stdscr.refresh()
+    name = ""
+    key= stdscr.getch()
+    while key != curses.KEY_ENTER and key not in [10,13]:
+        stdscr.clear()
+        stdscr.addstr(2,xt,title)
+        if key in range(32,126,1):
+            name += chr(key)
+        elif key ==263:
+            name = name[0:len(name)-1]
+        x = w//2 - len(name)//2
+        stdscr.addstr(4,x,name)
+        stdscr.refresh()
+        key= stdscr.getch()
+    strresult=""
+    for x in result:
+        strresult+=x
+    today = date.today()
+    strtoday = today.strftime("%d/%m/%Y")
+
+    f = open("SCOREBOARD.json",)
+    try:
+        json_data = json.load(f)
+        data = {name : [ {"result" : strresult , "date" : strtoday}]}
+        json_data.update(data)
+        with open('SCOREBOARD.json', 'w') as f:
+            json.dump(json_data, f)
+    except:
+        data = {name : [ {"result" : strresult , "date" : strtoday}]}
+        with open('SCOREBOARD.json', 'w') as f:
+            json.dump(data, f)
+
+    stdscr.clear()
+    text = "SAVING SCORE"
+    y= h//2
+    x= w//2 - len(text)//2
+    stdscr.addstr(y,x,text)
+    stdscr.refresh()
+    time.sleep(1)
+
+    main(stdscr)
 
 
 def initPlay(stdscr):
@@ -140,13 +207,15 @@ def initPlay(stdscr):
     result = roll()
     rollFX(stdscr,result)
     key = stdscr.getch()
-    while key != curses.KEY_ENTER and key not in [10,13,27]:
+    while key != curses.KEY_ENTER and key not in [10,13] and chr(key)!='s' and chr(key)!='q':
         key = stdscr.getch()
     
     if key == curses.KEY_ENTER or key in [10,13]:
         initPlay(stdscr)
-    elif key == 27:
+    elif chr(key) == 'q':
         main(stdscr)
+    elif chr(key)=='s':
+        saveScore(stdscr,result)
 
     main(stdscr)
 
