@@ -65,25 +65,45 @@ def initScoreBoard(stdscr):
     key = 0
     while key!=curses.KEY_ENTER and key not in [10,13]:
         stdscr.clear()
-        #i=0
-        #for row in json_data["AAA"]:
-        #    stdscr.addstr(i, 0, row[i +1])
-        #    i+=1
-        
-        stdscr.addstr(0, 0, "(DEVELOPING) PRESS RETURN TO GO BACK")
+        row = 2
+        for idx,x in enumerate(json_data):
+            stdscr.addstr(row , 0 ,x)
+            row+=1
+            for idx2,y in enumerate(json_data[x]):
+                text = "    Result: "+str(json_data[x][idx2]["result"]) +"\n    Date: "+ str(json_data[x][idx2]["date"])
+                stdscr.addstr(row, 0 ,text)
+                row+=3
+        stdscr.addstr(0, 0, "PRESS RETURN TO GO BACK")
         stdscr.refresh()
         key = stdscr.getch()
 
     main(stdscr)
 
-def roll(max):
-    result = [random.randint(1,max),random.randint(1,max),random.randint(1,max)]
+def roll():
+    max = 7
+    result = ["","",""]
+    for x in range(3):
+        tmp = random.randint(1,max)
+        if tmp == 1:
+            result[x]="!"
+        elif tmp == 2:
+            result[x]="?"
+        elif tmp == 3:
+            result[x]="#"
+        elif tmp == 4:
+            result[x]="@"
+        elif tmp == 5:
+            result[x]="%"
+        elif tmp == 6:
+            result[x]="&"
+        elif tmp == 7:
+            result[x]="$"
 
     return result
 
 def rollFX(stdscr,result):
     h , w = stdscr.getmaxyx()
-    loadEfect = ["/","-","\\","|"]*3
+    loadEfect = ["-","\\","|","/"]*3
     rollStates = ["[ - : - : - ]","[ "+str(result[0])+" : - : - ]","[ "+str(result[0])+" : "+str(result[1])+" : - ]","[ "+str(result[0])+" : "+str(result[1])+" : "+str(result[2])+" ]"] 
 
     for state in rollStates:
@@ -117,7 +137,7 @@ def rollFX(stdscr,result):
 
 def initPlay(stdscr):
     stdscr.clear()
-    result = roll(5)
+    result = roll()
     rollFX(stdscr,result)
     key = stdscr.getch()
     while key != curses.KEY_ENTER and key not in [10,13,27]:
