@@ -12,7 +12,7 @@ The principal menu has:
 PLAY: Roll a Jackpot machine with 3 slots. The posible values are:
 1. !
 2. ?
-3. #
+3. \#
 4. @
 5. %
 6. &
