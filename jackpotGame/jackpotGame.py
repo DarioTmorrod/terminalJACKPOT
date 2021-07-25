@@ -143,11 +143,11 @@ def rollFX(stdscr,result):
     stdscr.addstr(0,0,"PRESS Q TO EXIT")
     if result[0]==result[1] and result[1]==result[2]:
         text = " $  $  $  *YOU WIN*  $  $  $"
-        x = w//2 - len(text)/2
+        x = w//2 - len(text)//2
         stdscr.addstr(y+3,x,text)
     else:
         text = "SORRY... PRESS ENTER TO TRY AGAIN"
-        x = w//2 - len(text)/2
+        x = w//2 - len(text)//2
         stdscr.addstr(y+3,x,text)
 
     stdscr.addstr(h -1,0,"PRESS S TO SAVE SCORE")
