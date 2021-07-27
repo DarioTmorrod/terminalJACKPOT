@@ -22,13 +22,7 @@ If you get three in a row you win.
 You can save the result in a json and read it later in SCORE BOARD.
 
 ## HOW TO EXECUTE 
-Prerequesites:
-* Install Python3
-> python
-* Install module curses
-> pip install windows-curses
-
-Open your terminal (Win + cmd) and navigate to the project folder jackpotGame , then execute the file jackpotGame.py writing:
-> python jackpotGame.py
+In windows, double click on *Windows_launcher.bat*
+In linux, install python3 and module-curses. Then execute jackpotGame.py
 
 
